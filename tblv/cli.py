@@ -18,7 +18,7 @@ def plot_cli(data):
         
     def show_plot(selection):
         x, y, title = get_x_y_title(data, selection)
-        plot = get_plot_string(x, y, title, plot_size = (180, 35))
+        plot = get_plot_string(x, y, title, plot_size = (term.width // 1.2, term.height // 1.2))
         splited_string = plot.splitlines()
         for idx, tag in enumerate(tags):
             if idx == selection:
