@@ -20,15 +20,17 @@ def plot_cli(data):
         x, y, title = get_x_y_title(data, selection)
         plot = get_plot_string(x, y, title, plot_size = (term.width // 1.2, term.height // 1.2))
         splited_string = plot.splitlines()
+        string = ""
         for idx, tag in enumerate(tags):
             if idx == selection:
-                print(f'\t{term.bold_red_reverse(tag)}\t', end = '')
+                string += f'\t{term.bold_red_reverse(tag)}\t'
             else:
-                print(f'\t{term.normal + tag}\t', end = '')
-        print("\tTip: h/l to move left/right, q to exit" + term.move_down(2), end = '')
+                string += f'\t{term.normal + tag}\t'
+        print(term.center(string))
+        print(term.center("\tTip: h/l to move left/right, q to exit"))
 
         for line in splited_string:
-            print(term.move_right(8) + line)
+            print(term.center(line))
 
     term = Terminal()
     selection = 0
