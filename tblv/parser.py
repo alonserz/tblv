@@ -1,8 +1,9 @@
+from functools import lru_cache
 import struct
 from tblv.tf_protobuf.event_pb2 import Event
 from tblv.crc32c import masked_crc32c
 
-
+@lru_cache()
 def test(data, crc):
     crc = struct.unpack('I', crc)[0]
     data_crc = masked_crc32c(data)
@@ -41,7 +42,10 @@ def parse(path):
     return data
 
 def get_x_y_title(data, idx):
-    tag = list(data.keys())[idx]
+    tags = list(data.keys())
+    if idx not in range(len(tags)):
+        return (), (), "Wrong index"
+    tag = tags[idx]
     x = tuple(data[tag].keys())
     y = tuple(data[tag].values())
     return x, y, tag
