@@ -13,9 +13,11 @@ def plot_cli(data):
         plots_data = []
         title = ""
         
-        for selection in kwargs:
+        for idx, selection in enumerate(kwargs):
             x, y, title_ = get_x_y_title(data, kwargs[selection])
             title += title_
+            if idx < len(kwargs) - 1:
+                title += " and "
             plots_data.append((x, y, title_))
 
         # unpack plots_data to provide it as tuples
