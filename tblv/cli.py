@@ -1,6 +1,12 @@
 from blessed import Terminal
 from tblv.plot import get_plot_string
 from tblv.parser import get_x_y_title
+from tblv.keybindings import (
+    KEY_MOVE_LEFT,
+    KEY_MOVE_RIGHT,
+    KEY_MERGE,
+    KEY_QUIT,
+)
 
 def plot_cli(data):
     tags = list(data.keys())
@@ -41,19 +47,19 @@ def plot_cli(data):
     with term.cbreak(), term.hidden_cursor():
         while selection_inprogress:
             key = term.inkey()
-            if key.lower() == 'l':
+            if key.lower() == KEY_MOVE_RIGHT:
                 selection += 1
                 selection = selection % len(tags)
                 display(selection = selection)
-            elif key.lower() == 'h':
+            elif key.lower() == KEY_MOVE_LEFT:
                 selection -= 1
                 selection = selection % len(tags)
                 display(selection = selection)
-            elif key.lower() == 'm':
+            elif key.lower() == KEY_MERGE:
                 # Unable to enter two-digit numbers
                 # TODO: support two-digit numbers
                 key1 = term.inkey()
                 key2 = term.inkey()
                 display(selection = int(key1), selection1 = int(key2))
-            elif key.lower() == 'q':
+            elif key.lower() == KEY_QUIT:
                 selection_inprogress = False

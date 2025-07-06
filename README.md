@@ -17,9 +17,12 @@ call .venv/Scripts/activate
 pip install -e .
 tblv tblv/runs/segmentation.0
 ```
-# Keybindings
+# Default Keybindings
 | Keys                        | Description  |
 | --------------              | ------------ | 
 | h                           | Move left    |
 | l                           | Move right   |
 | m ```{arg1}``` ```{arg2}``` | Merge two plots together. ```{arg1}``` ```{arg2}``` are indexes of plots  |
+| q                           | Quit         |
+
+To change default keybindings edit file ```tblv/keybindings.py```
