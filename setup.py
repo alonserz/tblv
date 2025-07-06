@@ -4,7 +4,7 @@ setup(
     name='tblv',
     author='alonserz',
     maintainer='alonserz',
-    version='0.2',
+    version='0.3',
     description = "Simple TensorBoard Log Viewer",
     packages = ['tblv'],
     install_requires= [
