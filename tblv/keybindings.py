@@ -1,4 +1,4 @@
-KEY_MOVE_LEFT = 'l'
-KEY_MOVE_RIGHT = 'h'
+KEY_MOVE_LEFT = 'h'
+KEY_MOVE_RIGHT = 'l'
 KEY_MERGE = 'm'
 KEY_QUIT = 'q'
