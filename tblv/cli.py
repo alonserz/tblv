@@ -114,7 +114,7 @@ def show_directory_selection_menu(data):
                 start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
                 end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
                 display(selection, start_pos, end_pos)
-            elif key.lower() == KEY_SELECT:
+            elif key.lower() in KEY_SELECT:
                 return selection, start_pos, end_pos
             elif key.lower() == KEY_QUIT:
                 exit()
@@ -165,7 +165,7 @@ def show_file_selection_menu(data, idx, start_pos, end_pos):
                 selection -= 1
                 selection = selection % len(data[folder_by_idx])
                 display(selection, idx)
-            elif key.lower() == KEY_SELECT:
+            elif key.lower() in KEY_SELECT:
                 return folder_by_idx + f'/{data[folder_by_idx][selection]}'
             elif key.lower() == KEY_QUIT:
                 return None
