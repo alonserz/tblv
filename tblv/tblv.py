@@ -24,8 +24,8 @@ def main():
         # may be i can open previous menu without while true loop
         while True:
             data = parse_dir(path)
-            folder_idx = show_directory_selection_menu(data)
-            file_path = show_file_selection_menu(data, folder_idx)
+            folder_idx, start_pos, end_pos = show_directory_selection_menu(data)
+            file_path = show_file_selection_menu(data, folder_idx, start_pos, end_pos)
             if file_path is None:
                 continue
             file_data = parse_file(file_path)

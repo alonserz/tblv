@@ -72,19 +72,19 @@ dir_cached_strings = {}
 # Shows menu to choose file
 def show_directory_selection_menu(data):
     # Shows all folders, when hover on it shows all files in this folder
-    def display(selection):
+    def display(selection, start_pos, end_pos):
         print(term.clear)
         global dir_cached_string
         if selection not in dir_cached_strings:
             string = ''
-            for idx, folder in enumerate(data):
-                if idx == selection:
-                    string += f'[{idx}] {term.bold_green_reverse(folder)}\n'
+            for idx, folder in enumerate(folders[start_pos:end_pos]): 
+                if idx + start_pos == selection:
+                    string += f'[{idx + start_pos}] {term.bold_green_reverse(folder)}\n'
                     # Shows all files in folder
                     for idx, file in enumerate(data[folder]):
                         string += f'\t [{idx}] {file}\n'
                 else:
-                    string += f'[{idx}] {term.normal + folder}\t\n'
+                    string += f'[{idx + start_pos}] {term.normal + folder}\t\n'
 
             dir_cached_strings[selection] = string
         print(dir_cached_strings[selection])
@@ -93,9 +93,11 @@ def show_directory_selection_menu(data):
     
     term = Terminal()
     selection = 0
+    term_lines = term.height // 3
+    start_pos = 0
+    end_pos = term_lines 
     folders = list(data.keys())
-
-    display(selection)
+    display(selection, start_pos, end_pos)
     with term.cbreak(), term.hidden_cursor():
         # Loop while folder isn't selected
         while True:
@@ -103,44 +105,51 @@ def show_directory_selection_menu(data):
             if key.lower() == KEY_MOVE_DOWN:
                 selection += 1
                 selection = selection % len(folders)
-                display(selection)
+                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
+                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
+                display(selection, start_pos, end_pos)
             elif key.lower() == KEY_MOVE_UP:
                 selection -= 1
                 selection = selection % len(folders)
-                display(selection)
+                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
+                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
+                display(selection, start_pos, end_pos)
             elif key.lower() == KEY_SELECT:
-                return selection
+                return selection, start_pos, end_pos
             elif key.lower() == KEY_QUIT:
                 exit()
 
 file_cached_string = {}
-def show_file_selection_menu(data, idx):
+def show_file_selection_menu(data, idx, start_pos, end_pos):
     def display(selection_file, selected_folder_idx):
         print(term.clear)
         global file_cached_string
-        if selection_file not in file_cached_string:
-            string = ''
-            idx_ = 0
+        string = ''
+        idx_ = 0
+        if selected_folder_idx not in file_cached_string:
+            file_cached_string[selected_folder_idx] = {}
+        if selection_file not in file_cached_string[selected_folder_idx]:
             # Top of folders (before selected one)
-            for idx, folder in enumerate(data):
-                string += f'[{idx}] {folder}\n'
-                if idx == selected_folder_idx:
-                    idx_ = idx 
+            for idx, folder in enumerate(folders[start_pos:end_pos]):
+                string += f'[{idx + start_pos}] {folder}\n'
+                if idx + start_pos == selected_folder_idx:
+                    idx_ = idx + start_pos
                     break
             # Selected folder and files in it
-            for idx, file in enumerate(data[folder_by_idx]):
+            for idx, file in enumerate(data[folders[idx_]]):
                 if idx == selection_file:
                     string += f'\t [{idx}] {term.bold_green_reverse(file)}\n'
                 else:
                     string += f'\t [{idx}] {term.normal + file}\n'
             # Shows rest of folders
-            for idx in range(idx_ + 1, len(list(data.keys()))):
-                string += f'[{idx}] {list(data.keys())[idx]}\n'
-            file_cached_string[selection_file] = string
+            for idx in range(idx_ + 1, len(folders[:end_pos])):
+                string += f'[{idx}] {folders[idx]}\n'
+            file_cached_string[selected_folder_idx][selection_file] = string
+        
+        print(file_cached_string[selected_folder_idx][selection_file])
 
-        print(file_cached_string[selection_file])
-
-    folder_by_idx = list(data.keys())[idx]
+    folders = list(data.keys())
+    folder_by_idx = folders[idx]
     term = Terminal()
     selection = 0
     display(selection, idx)
