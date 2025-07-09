@@ -68,21 +68,26 @@ def show_plot(data):
             elif key.lower() == KEY_QUIT:
                 selection_inprogress = False
 
+dir_cached_strings = {}
 # Shows menu to choose file
 def show_directory_selection_menu(data):
     # Shows all folders, when hover on it shows all files in this folder
-    def display(data, selection, choose_files = False):
+    def display(selection):
         print(term.clear)
-        string = ''
-        for idx, folder in enumerate(data):
-            if idx == selection:
-                string += f'[{idx}] {term.bold_green_reverse(folder)}\n'
-                # Shows all files in folder
-                for idx, file in enumerate(data[folder]):
-                    string += f'\t [{idx}] {file}\n'
-            else:
-                string += f'[{idx}] {term.normal + folder}\t\n'
-        print(string)
+        global dir_cached_string
+        if selection not in dir_cached_strings:
+            string = ''
+            for idx, folder in enumerate(data):
+                if idx == selection:
+                    string += f'[{idx}] {term.bold_green_reverse(folder)}\n'
+                    # Shows all files in folder
+                    for idx, file in enumerate(data[folder]):
+                        string += f'\t [{idx}] {file}\n'
+                else:
+                    string += f'[{idx}] {term.normal + folder}\t\n'
+
+            dir_cached_strings[selection] = string
+        print(dir_cached_strings[selection])
     
     # When you select folder moves selection to file which this folder contains
     
@@ -90,7 +95,7 @@ def show_directory_selection_menu(data):
     selection = 0
     folders = list(data.keys())
 
-    display(data, selection)
+    display(selection)
     with term.cbreak(), term.hidden_cursor():
         # Loop while folder isn't selected
         while True:
@@ -98,43 +103,47 @@ def show_directory_selection_menu(data):
             if key.lower() == KEY_MOVE_DOWN:
                 selection += 1
                 selection = selection % len(folders)
-                display(data, selection)
+                display(selection)
             elif key.lower() == KEY_MOVE_UP:
                 selection -= 1
                 selection = selection % len(folders)
-                display(data, selection)
+                display(selection)
             elif key.lower() == KEY_SELECT:
                 return selection
             elif key.lower() == KEY_QUIT:
                 exit()
 
+file_cached_string = {}
 def show_file_selection_menu(data, idx):
-    def display(data, selection_file, selected_folder_idx):
+    def display(selection_file, selected_folder_idx):
         print(term.clear)
-        string = ''
-        idx_ = 0
-        # Top of folders (before selected one)
-        for idx, folder in enumerate(data):
-            string += f'[{idx}] {folder}\n'
-            if idx == selected_folder_idx:
-                idx_ = idx 
-                break
-        # Selected folder and files in it
-        for idx, file in enumerate(data[folder_by_idx]):
-            if idx == selection_file:
-                string += f'\t [{idx}] {term.bold_green_reverse(file)}\n'
-            else:
-                string += f'\t [{idx}] {term.normal + file}\n'
-        # Shows rest of folders
-        for idx in range(idx_ + 1, len(list(data.keys()))):
-            string += f'[{idx}] {list(data.keys())[idx]}\n'
+        global file_cached_string
+        if selection_file not in file_cached_string:
+            string = ''
+            idx_ = 0
+            # Top of folders (before selected one)
+            for idx, folder in enumerate(data):
+                string += f'[{idx}] {folder}\n'
+                if idx == selected_folder_idx:
+                    idx_ = idx 
+                    break
+            # Selected folder and files in it
+            for idx, file in enumerate(data[folder_by_idx]):
+                if idx == selection_file:
+                    string += f'\t [{idx}] {term.bold_green_reverse(file)}\n'
+                else:
+                    string += f'\t [{idx}] {term.normal + file}\n'
+            # Shows rest of folders
+            for idx in range(idx_ + 1, len(list(data.keys()))):
+                string += f'[{idx}] {list(data.keys())[idx]}\n'
+            file_cached_string[selection_file] = string
 
-        print(string)
+        print(file_cached_string[selection_file])
 
     folder_by_idx = list(data.keys())[idx]
     term = Terminal()
     selection = 0
-    display(data, selection, idx)
+    display(selection, idx)
     # Loop while file isn't selected
     with term.hidden_cursor(), term.cbreak():
         while True:
@@ -142,11 +151,11 @@ def show_file_selection_menu(data, idx):
             if key.lower() == KEY_MOVE_DOWN:
                 selection += 1
                 selection = selection % len(data[folder_by_idx])
-                display(data, selection, idx)
+                display(selection, idx)
             elif key.lower() == KEY_MOVE_UP:
                 selection -= 1
                 selection = selection % len(data[folder_by_idx])
-                display(data, selection, idx)
+                display(selection, idx)
             elif key.lower() == KEY_SELECT:
                 return folder_by_idx + f'/{data[folder_by_idx][selection]}'
             elif key.lower() == KEY_QUIT:

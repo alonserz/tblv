@@ -11,7 +11,7 @@ def test(data, crc):
     data_crc = masked_crc32c(data)
     if crc != data_crc:
         print(f'Warning: CRC not match! Got {data_crc}, expect {crc}')
-
+@lru_cache()
 def parse_file(path):
     data = {}
     with open(path, 'rb') as file:
@@ -43,6 +43,7 @@ def parse_file(path):
 
     return data
 
+@lru_cache()
 def parse_dir(path):
     data = {}
     dir = pathlib.Path(path)
