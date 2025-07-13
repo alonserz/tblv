@@ -20,24 +20,22 @@ def show_plot(data):
         print(term.clear)
         # Shows selected plot
         plots_data = []
-        title = ""
-        
-        for idx, selection in enumerate(kwargs):
+        title_list = []
+
+        for selection in kwargs:
             x, y, title_ = get_x_y_title(data, kwargs[selection])
-            title += title_
-            if idx < len(kwargs) - 1:
-                title += " and "
+            title_list.append(title_)
             plots_data.append((x, y, title_))
 
+        title = ' and '.join(title_list)
         # unpack plots_data to provide it as tuples
         plot = get_plot_string(*plots_data, title = title, plot_size = (term.width, term.height // 1.1))
-        string = ""
         selection = kwargs['selection']
-        for idx, tag in enumerate(tags):
-            if idx == selection:
-                string += f'\t[{idx}] {term.bold_green_reverse(tag)}\t'
-            else:
-                string += f'\t[{idx}] {term.normal + tag}\t'
+        string = ''.join((
+            f'\t[{idx}] {term.bold_green_reverse(tag)}\t' if idx == selection
+            else f'\t[{idx}] {term.normal + tag}\t'
+            for idx, tag in enumerate(tags)
+        ))
 
         print(term.center(string))
         print(term.center(plot))
@@ -76,15 +74,14 @@ def show_directory_selection_menu(data):
         print(term.clear)
         global dir_cached_string
         if selection not in dir_cached_strings:
-            string = ''
-            for idx, folder in enumerate(folders[start_pos:end_pos]): 
-                if idx + start_pos == selection:
-                    string += f'[{idx + start_pos}] {term.bold_green_reverse(folder)}\n'
-                    # Shows all files in folder
-                    for idx, file in enumerate(data[folder]):
-                        string += f'\t [{idx}] {file}\n'
-                else:
-                    string += f'[{idx + start_pos}] {term.normal + folder}\t\n'
+            string = ''.join((
+                f'[{idx + start_pos}] {term.bold_green_reverse(folder)}\n' + ''.join(( # show chosen folder as selected
+                    f'\t [{idx}] {file}\n' #show files of chosen folder
+                    for idx, file in enumerate(data[folder]) # iterate through all files in folder
+                )) if idx + start_pos == selection else
+                f'[{idx + start_pos}] {term.normal + folder}\t\n' # show non-selected folders
+                for idx, folder in enumerate(folders[start_pos:end_pos]) # iterate through batch of folders
+            ))
 
             dir_cached_strings[selection] = string
         print(dir_cached_strings[selection])
@@ -135,15 +132,18 @@ def show_file_selection_menu(data, idx, start_pos, end_pos):
                 if idx + start_pos == selected_folder_idx:
                     idx_ = idx + start_pos
                     break
-            # Selected folder and files in it
-            for idx, file in enumerate(data[folders[idx_]]):
-                if idx == selection_file:
-                    string += f'\t [{idx}] {term.bold_green_reverse(file)}\n'
-                else:
-                    string += f'\t [{idx}] {term.normal + file}\n'
+
+            string += ''.join((
+                f'\t [{idx}] {term.bold_green_reverse(file)}\n' if idx == selection_file else
+                f'\t [{idx}] {term.normal + file}\n'
+                for idx, file in enumerate(data[folders[idx_]]) 
+            ))
+
             # Shows rest of folders
-            for idx in range(idx_ + 1, len(folders[:end_pos])):
-                string += f'[{idx}] {folders[idx]}\n'
+            string += ''.join((
+                f'[{idx}] {folders[idx]}\n'
+                for idx in range(idx_ + 1, len(folders[:end_pos]))
+            ))
             file_cached_string[selected_folder_idx][selection_file] = string
         
         print(file_cached_string[selected_folder_idx][selection_file])
