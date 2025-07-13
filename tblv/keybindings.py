@@ -5,3 +5,5 @@ KEY_MOVE_UP = 'k'
 KEY_SELECT = ['\n', '\r', '\x1bOM'] # Enter
 KEY_MERGE = 'm'
 KEY_QUIT = 'q'
+KEY_MOVE_BOTTOM = 'G'
+KEY_MOVE_TOP = 'g'

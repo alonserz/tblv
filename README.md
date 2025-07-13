@@ -18,11 +18,16 @@ pip install -e .
 tblv tblv/runs/segmentation.0
 ```
 # Default Keybindings
-| Keys                        | Description  |
-| --------------              | ------------ | 
-| h                           | Move left    |
-| l                           | Move right   |
+| Keys                        | Description                                                               |
+| --------------              | ------------                                                              | 
+| h                           | Select next plot                                                          |
+| l                           | Select previous plot                                                      |
+| j                           | Select next folder/file                                                   |
+| k                           | Select previous folder/file                                               |
+| g                           | Move to first line of selection                                           |
+| G                           | Move to last line of selection                                            |
 | m ```{arg1}``` ```{arg2}``` | Merge two plots together. ```{arg1}``` ```{arg2}``` are indexes of plots  |
-| q                           | Quit         |
+| Enter                       | Select folder/file                                                        |
+| q                           | Quit/Open previous menu                                                   |
 
-To change default keybindings edit file ```tblv/keybindings.py```
+To change default keybindings edit ```tblv/keybindings.py```

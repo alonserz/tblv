@@ -7,6 +7,8 @@ from tblv.keybindings import (
     KEY_MOVE_UP,
     KEY_SELECT,
     KEY_QUIT,
+    KEY_MOVE_BOTTOM,
+    KEY_MOVE_TOP
 )
 from tblv.parser import get_x_y_title
 from tblv.plot import get_plot_string
@@ -49,21 +51,21 @@ def show_plot(data):
         # Plot selection
         while selection_inprogress:
             key = term.inkey()
-            if key.lower() == KEY_MOVE_RIGHT:
+            if key == KEY_MOVE_RIGHT:
                 selection += 1
                 selection = selection % len(tags)
                 display(selection = selection)
-            elif key.lower() == KEY_MOVE_LEFT:
+            elif key == KEY_MOVE_LEFT:
                 selection -= 1
                 selection = selection % len(tags)
                 display(selection = selection)
-            elif key.lower() == KEY_MERGE:
+            elif key == KEY_MERGE:
                 # Unable to enter two-digit numbers
                 # TODO: support two-digit numbers
                 key1 = term.inkey()
                 key2 = term.inkey()
                 display(selection = int(key1), selection1 = int(key2))
-            elif key.lower() == KEY_QUIT:
+            elif key == KEY_QUIT:
                 selection_inprogress = False
 
 dir_cached_strings = {}
@@ -78,8 +80,8 @@ def show_directory_selection_menu(data):
                 f'[{idx + start_pos}] {term.bold_green_reverse(folder)}\n' + ''.join(( # show chosen folder as selected
                     f'\t [{idx}] {file}\n' #show files of chosen folder
                     for idx, file in enumerate(data[folder]) # iterate through all files in folder
-                )) if idx + start_pos == selection else
-                f'[{idx + start_pos}] {term.normal + folder}\t\n' # show non-selected folders
+                )) if idx + start_pos == selection 
+                else f'[{idx + start_pos}] {term.normal + folder}\t\n' # show non-selected folders
                 for idx, folder in enumerate(folders[start_pos:end_pos]) # iterate through batch of folders
             ))
 
@@ -99,22 +101,32 @@ def show_directory_selection_menu(data):
         # Loop while folder isn't selected
         while True:
             key = term.inkey()
-            if key.lower() == KEY_MOVE_DOWN:
+            if key == KEY_MOVE_DOWN:
                 selection += 1
                 selection = selection % len(folders)
                 start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
                 end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
-                display(selection, start_pos, end_pos)
-            elif key.lower() == KEY_MOVE_UP:
+            elif key == KEY_MOVE_UP:
                 selection -= 1
                 selection = selection % len(folders)
                 start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
                 end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
-                display(selection, start_pos, end_pos)
-            elif key.lower() in KEY_SELECT:
+            elif key == KEY_MOVE_BOTTOM:
+                selection = len(folders)
+                selection = selection - 1 % len(folders)
+                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
+                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
+            elif key == KEY_MOVE_TOP:
+                selection = 0
+                selection = selection % len(folders)
+                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
+                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
+            elif key in KEY_SELECT:
                 return selection, start_pos, end_pos
-            elif key.lower() == KEY_QUIT:
+            elif key == KEY_QUIT:
                 exit()
+
+            display(selection, start_pos, end_pos)
 
 file_cached_string = {}
 def show_file_selection_menu(data, idx, start_pos, end_pos):
@@ -157,15 +169,20 @@ def show_file_selection_menu(data, idx, start_pos, end_pos):
     with term.hidden_cursor(), term.cbreak():
         while True:
             key = term.inkey()
-            if key.lower() == KEY_MOVE_DOWN:
+            if key == KEY_MOVE_DOWN:
                 selection += 1
                 selection = selection % len(data[folder_by_idx])
-                display(selection, idx)
-            elif key.lower() == KEY_MOVE_UP:
+            elif key == KEY_MOVE_UP:
                 selection -= 1
                 selection = selection % len(data[folder_by_idx])
-                display(selection, idx)
-            elif key.lower() in KEY_SELECT:
+            elif key == KEY_MOVE_BOTTOM:
+                selection = len(data[folder_by_idx])
+                selection = selection - 1 % len(data[folder_by_idx])
+            elif key == KEY_MOVE_TOP:
+                selection = 0
+                selection = selection % len(data[folder_by_idx])
+            elif key in KEY_SELECT:
                 return folder_by_idx + f'/{data[folder_by_idx][selection]}'
-            elif key.lower() == KEY_QUIT:
+            elif key == KEY_QUIT:
                 return None
+            display(selection, idx)
