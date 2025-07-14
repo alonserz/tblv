@@ -18,21 +18,22 @@ from tblv.plot import get_plot_string
 def show_plot(data):
     tags = list(data.keys())
 
-    def display(**kwargs):
+    def display(*args):
         print(term.clear)
         # Shows selected plot
         plots_data = []
         title_list = []
-
-        for selection in kwargs:
-            x, y, title_ = get_x_y_title(data, kwargs[selection])
+        for selection in args:
+            if selection is None:
+                continue
+            x, y, title_ = get_x_y_title(data, selection)
             title_list.append(title_)
             plots_data.append((x, y, title_))
 
         title = ' and '.join(title_list)
         # unpack plots_data to provide it as tuples
         plot = get_plot_string(*plots_data, title = title, plot_size = (term.width, term.height // 1.1))
-        selection = kwargs['selection']
+        selection = args[0]
         string = ''.join((
             f'\t[{idx}] {term.bold_green_reverse(tag)}\t' if idx == selection
             else f'\t[{idx}] {term.normal + tag}\t'
@@ -44,8 +45,9 @@ def show_plot(data):
 
     term = Terminal()
     selection = 0
-    display(selection = selection)
+    selected = (0, None)
 
+    display(*selected)
     selection_inprogress = True
     with term.cbreak(), term.hidden_cursor():
         # Plot selection
@@ -54,19 +56,20 @@ def show_plot(data):
             if key == KEY_MOVE_RIGHT:
                 selection += 1
                 selection = selection % len(tags)
-                display(selection = selection)
+                selected = (selection, None)
             elif key == KEY_MOVE_LEFT:
                 selection -= 1
                 selection = selection % len(tags)
-                display(selection = selection)
+                selected = (selection, None)
             elif key == KEY_MERGE:
                 # Unable to enter two-digit numbers
                 # TODO: support two-digit numbers
                 key1 = term.inkey()
                 key2 = term.inkey()
-                display(selection = int(key1), selection1 = int(key2))
+                selected = (key1, key2)
             elif key == KEY_QUIT:
                 selection_inprogress = False
+            display(*selected)
 
 dir_cached_strings = {}
 # Shows menu to choose file

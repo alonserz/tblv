@@ -59,6 +59,7 @@ def parse_dir(path):
            
 def get_x_y_title(data, idx):
     tags = list(data.keys())
+    idx = int(idx)
     if idx not in range(len(tags)):
         return (), (), "Wrong index"
     tag = tags[idx]
