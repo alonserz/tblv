@@ -95,7 +95,7 @@ def show_directory_selection_menu(data):
     
     term = Terminal()
     selection = 0
-    term_lines = term.height // 3
+    term_lines = term.height // 2
     start_pos = 0
     end_pos = term_lines 
     folders = list(data.keys())
@@ -107,28 +107,21 @@ def show_directory_selection_menu(data):
             if key == KEY_MOVE_DOWN:
                 selection += 1
                 selection = selection % len(folders)
-                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
-                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
             elif key == KEY_MOVE_UP:
                 selection -= 1
                 selection = selection % len(folders)
-                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
-                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
             elif key == KEY_MOVE_BOTTOM:
                 selection = len(folders)
                 selection = selection - 1 % len(folders)
-                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
-                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
             elif key == KEY_MOVE_TOP:
                 selection = 0
                 selection = selection % len(folders)
-                start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
-                end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
             elif key in KEY_SELECT:
                 return selection, start_pos, end_pos
             elif key == KEY_QUIT:
                 exit()
-
+            start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
+            end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
             display(selection, start_pos, end_pos)
 
 file_cached_string = {}
@@ -136,31 +129,30 @@ def show_file_selection_menu(data, idx, start_pos, end_pos):
     def display(selection_file, selected_folder_idx):
         print(term.clear)
         global file_cached_string
-        string = ''
-        idx_ = 0
         if selected_folder_idx not in file_cached_string:
             file_cached_string[selected_folder_idx] = {}
         if selection_file not in file_cached_string[selected_folder_idx]:
             # Top of folders (before selected one)
-            for idx, folder in enumerate(folders[start_pos:end_pos]):
-                string += f'[{idx + start_pos}] {folder}\n'
-                if idx + start_pos == selected_folder_idx:
-                    idx_ = idx + start_pos
-                    break
-
-            string += ''.join((
-                f'\t [{idx}] {term.bold_green_reverse(file)}\n' if idx == selection_file else
-                f'\t [{idx}] {term.normal + file}\n'
-                for idx, file in enumerate(data[folders[idx_]]) 
+            strings = []
+            strings.append(''.join(
+                f'[{idx + start_pos}] {folder}\n'
+                for idx, folder in enumerate(folders[start_pos:end_pos])
+                if idx + start_pos <= selected_folder_idx
             ))
-
+            # show files
+            strings.append(''.join(
+                f'\t [{idx}] {term.bold_green_reverse(file)}\n' if idx == selection_file
+                else f'\t [{idx}] {term.normal + file}\n'
+                for idx, file in enumerate(data[folders[selected_folder_idx]]) 
+            ))
             # Shows rest of folders
-            string += ''.join((
+            strings.append(''.join(
                 f'[{idx}] {folders[idx]}\n'
-                for idx in range(idx_ + 1, len(folders[:end_pos]))
+                for idx in range(selected_folder_idx + 1, len(folders[:end_pos]))
             ))
+            string = ''.join(strings)
             file_cached_string[selected_folder_idx][selection_file] = string
-        
+
         print(file_cached_string[selected_folder_idx][selection_file])
 
     folders = list(data.keys())
