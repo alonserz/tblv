@@ -119,15 +119,18 @@ def show_directory_selection_menu(data):
         while True:
             move_number, key = handle_input(term)
             if key == KEY_MOVE_DOWN:
-                selection += move_number
-                selection = selection % len(folders)
-                if move_number >= len(folders):
+                if move_number > 1 and move_number >= len(folders) - selection:
                     selection = len(folders) - 1
+                else:
+                    selection += move_number
+                    selection = selection % len(folders)
             elif key == KEY_MOVE_UP:
-                selection -= move_number
-                selection = selection % len(folders)
-                if move_number >= len(folders):
+                if move_number > 1 and move_number >= selection: # if you move like 100 lines up will select first one
                     selection = 0
+                else:
+                    selection -= move_number
+                    selection = selection % len(folders)
+                
             elif key == KEY_MOVE_BOTTOM:
                 selection = len(folders)
                 selection = selection - 1 % len(folders)
@@ -184,15 +187,17 @@ def show_file_selection_menu(data, idx, start_pos, end_pos):
         while True:
             move_number, key = handle_input(term)
             if key == KEY_MOVE_DOWN:
-                selection += move_number 
-                selection = selection % len(data[folder_by_idx])
-                if move_number >= len(data[folder_by_idx]):
+                if move_number > 1 and move_number >= len(data[folder_by_idx]) - selection:
                     selection = len(data[folder_by_idx]) - 1
+                else:
+                    selection += move_number 
+                    selection = selection % len(data[folder_by_idx])
             elif key == KEY_MOVE_UP:
-                selection -= move_number 
-                selection = selection % len(data[folder_by_idx])
-                if move_number >= len(data[folder_by_idx]):
+                if move_number > 1 and move_number >= selection:
                     selection = 0
+                else:
+                    selection -= move_number 
+                    selection = selection % len(data[folder_by_idx])
             elif key == KEY_MOVE_BOTTOM:
                 selection = len(data[folder_by_idx])
                 selection = selection - 1 % len(data[folder_by_idx])
