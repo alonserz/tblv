@@ -14,6 +14,20 @@ from tblv.parser import get_x_y_title
 from tblv.plot import get_plot_string
 
 
+def handle_input(term):
+    move_number = ''
+    last_key = None
+    while True:
+        key = term.inkey()
+        if not key.isdigit():
+            last_key = key
+            break
+        else:
+            move_number += str(key)
+    if move_number == '':
+        move_number = '1'
+    return int(move_number), last_key
+
 # Shows plot
 def show_plot(data):
     tags = list(data.keys())
@@ -103,13 +117,17 @@ def show_directory_selection_menu(data):
     with term.cbreak(), term.hidden_cursor():
         # Loop while folder isn't selected
         while True:
-            key = term.inkey()
+            move_number, key = handle_input(term)
             if key == KEY_MOVE_DOWN:
-                selection += 1
+                selection += move_number
                 selection = selection % len(folders)
+                if move_number >= len(folders):
+                    selection = len(folders) - 1
             elif key == KEY_MOVE_UP:
-                selection -= 1
+                selection -= move_number
                 selection = selection % len(folders)
+                if move_number >= len(folders):
+                    selection = 0
             elif key == KEY_MOVE_BOTTOM:
                 selection = len(folders)
                 selection = selection - 1 % len(folders)
@@ -123,6 +141,7 @@ def show_directory_selection_menu(data):
             start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
             end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
             display(selection, start_pos, end_pos)
+            print(move_number, key)
 
 file_cached_string = {}
 def show_file_selection_menu(data, idx, start_pos, end_pos):
@@ -163,13 +182,17 @@ def show_file_selection_menu(data, idx, start_pos, end_pos):
     # Loop while file isn't selected
     with term.hidden_cursor(), term.cbreak():
         while True:
-            key = term.inkey()
+            move_number, key = handle_input(term)
             if key == KEY_MOVE_DOWN:
-                selection += 1
+                selection += move_number 
                 selection = selection % len(data[folder_by_idx])
+                if move_number >= len(data[folder_by_idx]):
+                    selection = len(data[folder_by_idx]) - 1
             elif key == KEY_MOVE_UP:
-                selection -= 1
+                selection -= move_number 
                 selection = selection % len(data[folder_by_idx])
+                if move_number >= len(data[folder_by_idx]):
+                    selection = 0
             elif key == KEY_MOVE_BOTTOM:
                 selection = len(data[folder_by_idx])
                 selection = selection - 1 % len(data[folder_by_idx])
