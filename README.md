@@ -18,16 +18,16 @@ pip install -e .
 tblv tblv/runs/segmentation.0
 ```
 # Default Keybindings
-| Keys                        | Description                                                               |
-| --------------              | ------------                                                              | 
-| h                           | Select next plot                                                          |
-| l                           | Select previous plot                                                      |
-| {number}j                   | Go {number} folders/files down. Default is 1                              |
-| {number}k                   | Go {number} folders/files up. Default is 1                                |
-| g                           | Move to first line of selection                                           |
-| G                           | Move to last line of selection                                            |
-| m ```{arg1}``` ```{arg2}``` | Merge two plots together. ```{arg1}``` ```{arg2}``` are indexes of plots  |
-| Enter                       | Select folder/file                                                        |
-| q                           | Quit/Open previous menu                                                   |
+| Keys                          | Description                                                               |
+| --------------                | ------------                                                              | 
+| `h`                           | Select next plot                                                          |
+| `l`                           | Select previous plot                                                      |
+| `{number}j`                   | Go `{number}` folders/files down. Default is 1                            |
+| `{number}k`                   | Go `{number}` folders/files up. Default is 1                              |
+| `g`                           | Move to first line of selection                                           |
+| `G`                           | Move to last line of selection                                            |
+| `m`  `{arg1` `{arg2}`         | Merge two plots together. `{arg1}` `{arg2}` are indexes of plots          |
+| `Enter`                       | Select folder/file                                                        |
+| `q`                           | Quit/Open previous menu                                                   |
 
 To change default keybindings edit ```tblv/keybindings.py```
