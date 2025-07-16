@@ -33,7 +33,6 @@ def show_plot(data):
     tags = list(data.keys())
 
     def display(*args):
-        print(term.clear)
         # Shows selected plot
         plots_data = []
         title_list = []
@@ -53,9 +52,7 @@ def show_plot(data):
             else f'\t[{idx}] {term.normal + tag}\t'
             for idx, tag in enumerate(tags)
         ))
-
-        print(term.center(string))
-        print(term.center(plot))
+        print(term.clear + term.center(string) + term.center(plot))
 
     term = Terminal()
     selection = 0
@@ -90,7 +87,6 @@ dir_cached_strings = {}
 def show_directory_selection_menu(data):
     # Shows all folders, when hover on it shows all files in this folder
     def display(selection, start_pos, end_pos):
-        print(term.clear)
         global dir_cached_string
         if selection not in dir_cached_strings:
             string = ''.join((
@@ -103,7 +99,7 @@ def show_directory_selection_menu(data):
             ))
 
             dir_cached_strings[selection] = string
-        print(dir_cached_strings[selection])
+        print(term.clear + dir_cached_strings[selection])
     
     # When you select folder moves selection to file which this folder contains
     
@@ -144,12 +140,10 @@ def show_directory_selection_menu(data):
             start_pos = selection - term_lines if (selection - term_lines) >= 0 else 0
             end_pos = selection + term_lines if(selection + term_lines) <= len(folders) else len(folders)
             display(selection, start_pos, end_pos)
-            print(move_number, key)
 
 file_cached_string = {}
 def show_file_selection_menu(data, idx, start_pos, end_pos):
     def display(selection_file, selected_folder_idx):
-        print(term.clear)
         global file_cached_string
         if selected_folder_idx not in file_cached_string:
             file_cached_string[selected_folder_idx] = {}
@@ -175,7 +169,7 @@ def show_file_selection_menu(data, idx, start_pos, end_pos):
             string = ''.join(strings)
             file_cached_string[selected_folder_idx][selection_file] = string
 
-        print(file_cached_string[selected_folder_idx][selection_file])
+        print(term.clear + file_cached_string[selected_folder_idx][selection_file])
 
     folders = list(data.keys())
     folder_by_idx = folders[idx]
