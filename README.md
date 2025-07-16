@@ -27,6 +27,7 @@ tblv tblv/runs/segmentation.0
 | `g`                           | Move to first line of selection                                           |
 | `G`                           | Move to last line of selection                                            |
 | `m`  `{arg1` `{arg2}`         | Merge two plots together. `{arg1}` `{arg2}` are indexes of plots          |
+| `s`                           | Mark file as selected. To show plots of selected files press `Enter`      |
 | `Enter`                       | Select folder/file                                                        |
 | `q`                           | Quit/Open previous menu                                                   |
 

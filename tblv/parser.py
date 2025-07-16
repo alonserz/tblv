@@ -11,6 +11,7 @@ def test(data, crc):
     data_crc = masked_crc32c(data)
     if crc != data_crc:
         print(f'Warning: CRC not match! Got {data_crc}, expect {crc}')
+
 @lru_cache()
 def parse_file(path):
     data = {}
@@ -40,8 +41,11 @@ def parse_file(path):
                     data[tag] = {}
 
                 data[tag][step] = simple_value
-
     return data
+
+def parse_multiple_files(files):
+    data = {file: parse_file(file) for file in files}
+    return data 
 
 @lru_cache()
 def parse_dir(path):
