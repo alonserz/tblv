@@ -2,8 +2,6 @@ from tblv.keybindings import *
 from tblv.parser import get_x_y_title
 from tblv.plot import get_plot_string
 
-# DIRECTORIES_CACHE = {}
-# FILES_CACHE = {}
 SELECTED_FILES = []
 SELECTED_PLOTS = []
 
@@ -207,7 +205,11 @@ def show_file_selection_menu(term, data, idx, start_pos, end_pos):
                 selection = 0
                 selection = selection % len(data[folder_by_idx])
             elif key == KEY_MULTIPLE_FILES_SELECTION:
-                SELECTED_FILES.append(f'{folder_by_idx}/{data[folder_by_idx][selection]}')
+                filepath = f'{folder_by_idx}/{data[folder_by_idx][selection]}'
+                if not is_selected(filepath): SELECTED_FILES.append(filepath) 
+            elif key == KEY_REMOVE_SELECTED_FILE:
+                filepath = f'{folder_by_idx}/{data[folder_by_idx][selection]}'
+                if is_selected(filepath): SELECTED_FILES.remove(filepath) 
             elif key in KEY_SELECT:
                 SELECTED_FILES.append(f'{folder_by_idx}/{data[folder_by_idx][selection]}')
                 _ = SELECTED_FILES.copy()
