@@ -4,6 +4,7 @@ from tblv.plot import get_plot_string
 
 SELECTED_FILES = []
 SELECTED_PLOTS = []
+CHECKMARK = '✓'
 
 def handle_input(term):
     move_number = ''
@@ -21,6 +22,9 @@ def handle_input(term):
 
 # Shows plot
 def show_plot(term, data):
+    def is_selected(plot_idx):
+        return plot_idx in SELECTED_PLOTS
+
     def display(args, start_pos, end_pos):
         # Shows selected plot
         plots_data = []
@@ -44,7 +48,7 @@ def show_plot(term, data):
         selection = args[0][1]
         plots_name = ''.join((
             f'\t[{idx}] {term.bold_green_reverse(tag)}\t' if idx == selection
-            else f'\t[{idx}] {term.normal + tag}\t'
+            else f'\t[{CHECKMARK if is_selected((selected_file_idx, idx)) else idx}] {term.normal + tag}\t'
             for idx, tag in enumerate(tags)
         ))
         print(term.clear + term.center(files_name_string) + '\n' + term.center(plots_name) + '\n' + term.center(plot))
@@ -105,7 +109,7 @@ def show_directory_selection_menu(term, data):
     def display(selection, start_pos, end_pos):
         string = ''.join((
             f'[{idx + start_pos}] {term.bold_green_reverse(folder)}\n' + ''.join(( # show chosen folder as selected
-                f'\t [{checkmark if is_selected(f"{folder}/{file}") else idx}] {file}\n' #show files of chosen folder
+                f'\t [{CHECKMARK if is_selected(f"{folder}/{file}") else idx}] {file}\n' #show files of chosen folder
                 for idx, file in enumerate(data[folder]) # iterate through all files in folder
             )) if idx + start_pos == selection 
             else f'[{idx + start_pos}] {term.normal + folder}\t\n' # show non-selected folders
@@ -121,7 +125,6 @@ def show_directory_selection_menu(term, data):
     start_pos = 0
     end_pos = term_lines 
     folders = list(data.keys())
-    checkmark = '✓'
     display(selection, start_pos, end_pos)
     with term.cbreak(), term.hidden_cursor():
         # Loop while folder isn't selected
@@ -168,7 +171,7 @@ def show_file_selection_menu(term, data, idx, start_pos, end_pos):
         # show files
         strings.append(''.join(
             f'\t [{idx}] {term.bold_green_reverse(file)}\n' if idx == selection_file
-            else f'\t [{checkmark if is_selected(f"{folder_by_idx}/{file}") else idx}] {term.normal + file}\n'
+            else f'\t [{CHECKMARK if is_selected(f"{folder_by_idx}/{file}") else idx}] {term.normal + file}\n'
             for idx, file in enumerate(data[folders[selected_folder_idx]]) 
         ))
         # Shows rest of folders
@@ -183,7 +186,6 @@ def show_file_selection_menu(term, data, idx, start_pos, end_pos):
     folders = list(data.keys())
     folder_by_idx = folders[idx]
     selection = 0
-    checkmark = '✓'
     global SELECTED_FILES
     display(selection, idx)
     # Loop while file isn't selected
