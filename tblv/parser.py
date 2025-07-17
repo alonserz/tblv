@@ -48,16 +48,17 @@ def parse_multiple_files(files):
     return data 
 
 @lru_cache()
-def parse_dir(path):
+def parse_dir(paths):
     data = {}
-    dir = pathlib.Path(path)
-    files = dir.rglob('*.0')
-    for file in files:
-        dir_name = str(file.parent)
-        file_name = file.name
-        if dir_name not in data.keys():
-            data[dir_name] = []
-        data[dir_name].append(file_name)
+    for path in paths:
+        dir = pathlib.Path(path)
+        files = dir.rglob('*.0')
+        for file in files:
+            dir_name = str(file.parent)
+            file_name = file.name
+            if dir_name not in data.keys():
+                data[dir_name] = []
+            data[dir_name].append(file_name)
     return data
 
            

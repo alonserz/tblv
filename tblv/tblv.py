@@ -13,19 +13,18 @@ from blessed import Terminal
 
 def main():
     parser = argparse.ArgumentParser(prog = 'tblv')
-    parser.add_argument('path', help = 'Path to log file')
+    parser.add_argument('path', help = 'Path to log file', nargs = '+')
     args = parser.parse_args()
-    path = args.path
+    paths = args.path
     term = Terminal()
     # file parser:
-    if path.endswith('.0'):
-        data = parse_file(path)
-        show_plot(term, {path: data})
+    if all(path.endswith('.0') for path in paths):
+        show_plot(term, {path: parse_file(path) for path in paths})
     # dir parser
     else:
         # may be i can open previous menu without while true loop
         while True:
-            data = parse_dir(path)
+            data = parse_dir(tuple(paths))
             folder_idx, start_pos, end_pos = show_directory_selection_menu(term, data)
             file_path = show_file_selection_menu(term, data, folder_idx, start_pos, end_pos)
             if file_path is None:
