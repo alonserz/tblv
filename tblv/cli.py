@@ -21,16 +21,15 @@ def handle_input(term):
 
 # Shows plot
 def show_plot(term, data):
-    def display(args):
+    def display(args, start_pos, end_pos):
         # Shows selected plot
-        # TODO: provide multiple files in data, add new menu on top to select which file to plot
-        # data: {file_path: {'loss/train': {...}, ...}, file_path2: {'loss/train': {...}, ...}, ...}
         plots_data = []
         title_list = []
+        # TODO: Fix string when too many files opened at same time
         files_name_string = ''.join((
-            f'\t[{term.bold_green_reverse(str(idx))}]\t' if idx == selected_file_idx
-            else f'\t[{term.normal + str(idx)}]\t'
-            for idx, _ in enumerate(files)
+            f'\t[{int(idx) + start_pos}] {term.bold_green_reverse(filename)}\t' if idx + start_pos == selected_file_idx
+            else f'\t[{term.normal + str(int(idx) + start_pos)}]\t'
+            for idx, filename in enumerate(files[start_pos:end_pos])
         ))
         for selection in args:
             if selection is None:
@@ -52,11 +51,13 @@ def show_plot(term, data):
 
     selected_plot_idx = 0
     selected_file_idx = 0
+    start_pos = 0
+    end_pos = 3
     selected = ((selected_file_idx, selected_plot_idx),)
     selection_inprogress = True
     files = list(data.keys())
     tags = data[files[selected_file_idx]]
-    display(selected)
+    display(selected, start_pos, end_pos)
     with term.cbreak(), term.hidden_cursor():
         # Plot selection
         while selection_inprogress:
@@ -77,11 +78,11 @@ def show_plot(term, data):
                 selected = ((selected_file_idx, key1), (selected_file_idx, key2),)
             elif key == KEY_MOVE_NEXT_FILE:
                 selected_file_idx += 1
-                selected_file_idx = selected_file_idx % len(data)
+                selected_file_idx = selected_file_idx % len(files)
                 selected = ((selected_file_idx, selected_plot_idx),)
             elif key == KEY_MOVE_PREVIOUS_FILE:
                 selected_file_idx -= 1
-                selected_file_idx = selected_file_idx % len(data)
+                selected_file_idx = selected_file_idx % len(files)
                 selected = ((selected_file_idx, selected_plot_idx),)
             elif key == KEY_SELECT_PLOT_TO_MERGE:
                 SELECTED_PLOTS.append((selected_file_idx, selected_plot_idx))
@@ -90,7 +91,10 @@ def show_plot(term, data):
                 SELECTED_PLOTS.clear()
             elif key == KEY_QUIT:
                 selection_inprogress = False
-            display(selected)
+
+            start_pos = selected_file_idx - 3 if (selected_file_idx - 3) >= 0 else 0
+            end_pos = selected_file_idx + 3 if(selected_file_idx + 3) <= len(files) else len(files)
+            display(selected, start_pos, end_pos)
 
 # Shows menu to choose file
 def show_directory_selection_menu(term, data):
