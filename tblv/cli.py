@@ -5,6 +5,7 @@ from tblv.plot import get_plot_string
 # DIRECTORIES_CACHE = {}
 # FILES_CACHE = {}
 SELECTED_FILES = []
+SELECTED_PLOTS = []
 
 def handle_input(term):
     move_number = ''
@@ -22,30 +23,28 @@ def handle_input(term):
 
 # Shows plot
 def show_plot(term, data):
-    def display(*args):
+    def display(args):
         # Shows selected plot
         # TODO: provide multiple files in data, add new menu on top to select which file to plot
         # data: {file_path: {'loss/train': {...}, ...}, file_path2: {'loss/train': {...}, ...}, ...}
-        selected_file = args[0]
-        tag_by_idx = files[selected_file]
+        plots_data = []
+        title_list = []
         files_name_string = ''.join((
-            f'\t[{term.bold_green_reverse(str(idx))}]\t' if idx == selected_file
+            f'\t[{term.bold_green_reverse(str(idx))}]\t' if idx == selected_file_idx
             else f'\t[{term.normal + str(idx)}]\t'
             for idx, _ in enumerate(files)
         ))
-        
-        plots_data = []
-        title_list = []
-        for selection in args[1:]:
+        for selection in args:
             if selection is None:
                 continue
-            x, y, title_ = get_x_y_title(data[tag_by_idx], selection)
-            title_list.append(title_)
-            plots_data.append((x, y, title_))
+            x, y, title = get_x_y_title(data, selection[0], selection[1])
+            title_list.append(title)
+            plots_data.append((x, y, title))
+
         title = ' and '.join(title_list)
         # unpack plots_data to provide it as tuples
         plot = get_plot_string(*plots_data, title = title, plot_size = (term.width, term.height // 1.1))
-        selection = args[1]
+        selection = args[0][1]
         plots_name = ''.join((
             f'\t[{idx}] {term.bold_green_reverse(tag)}\t' if idx == selection
             else f'\t[{idx}] {term.normal + tag}\t'
@@ -55,11 +54,11 @@ def show_plot(term, data):
 
     selected_plot_idx = 0
     selected_file_idx = 0
-    selected = (selected_file_idx, selected_plot_idx, None)
+    selected = ((selected_file_idx, selected_plot_idx),)
     selection_inprogress = True
     files = list(data.keys())
     tags = data[files[selected_file_idx]]
-    display(*selected)
+    display(selected)
     with term.cbreak(), term.hidden_cursor():
         # Plot selection
         while selection_inprogress:
@@ -67,28 +66,33 @@ def show_plot(term, data):
             if key == KEY_MOVE_RIGHT:
                 selected_plot_idx += 1
                 selected_plot_idx = selected_plot_idx % len(tags)
-                selected = (selected_file_idx, selected_plot_idx, None)
+                selected = ((selected_file_idx, selected_plot_idx),)
             elif key == KEY_MOVE_LEFT:
                 selected_plot_idx -= 1
                 selected_plot_idx = selected_plot_idx % len(tags)
-                selected = (selected_file_idx, selected_plot_idx, None)
+                selected = ((selected_file_idx, selected_plot_idx),)
             elif key == KEY_MERGE:
                 # Unable to enter two-digit numbers
                 # TODO: support two-digit numbers
                 key1 = term.inkey()
                 key2 = term.inkey()
-                selected = (selected_file_idx, key1, key2)
+                selected = ((selected_file_idx, key1), (selected_file_idx, key2),)
             elif key == KEY_MOVE_NEXT_FILE:
                 selected_file_idx += 1
                 selected_file_idx = selected_file_idx % len(data)
-                selected = (selected_file_idx, selected_plot_idx, None)
+                selected = ((selected_file_idx, selected_plot_idx),)
             elif key == KEY_MOVE_PREVIOUS_FILE:
                 selected_file_idx -= 1
                 selected_file_idx = selected_file_idx % len(data)
-                selected = (selected_file_idx, selected_plot_idx, None)
+                selected = ((selected_file_idx, selected_plot_idx),)
+            elif key == KEY_SELECT_PLOT_TO_MERGE:
+                SELECTED_PLOTS.append((selected_file_idx, selected_plot_idx))
+            elif key in KEY_SELECT:
+                selected = SELECTED_PLOTS.copy()
+                SELECTED_PLOTS.clear()
             elif key == KEY_QUIT:
                 selection_inprogress = False
-            display(*selected)
+            display(selected)
 
 # Shows menu to choose file
 def show_directory_selection_menu(term, data):

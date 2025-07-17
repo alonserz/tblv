@@ -61,12 +61,16 @@ def parse_dir(path):
     return data
 
            
-def get_x_y_title(data, idx):
-    tags = list(data.keys())
-    idx = int(idx)
-    if idx not in range(len(tags)):
+def get_x_y_title(data, file_idx, plot_idx):
+    file_idx = int(file_idx)
+    plot_idx = int(plot_idx)
+    files_list = list(data.keys())
+    file_data = data[files_list[file_idx]]
+    tags = list(file_data.keys())
+    if plot_idx not in range(len(tags)):
         return (), (), "Wrong index"
-    tag = tags[idx]
-    x = tuple(data[tag].keys())
-    y = tuple(data[tag].values())
+    tag = tags[plot_idx]
+    tag_data = file_data[tag]
+    x = tuple(tag_data.keys())
+    y = tuple(tag_data.values())
     return x, y, tag
